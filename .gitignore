@@ -1,0 +1,6 @@
+*.user
+*.bak*
+_backup_*/
+bin/
+obj/
+.vs/

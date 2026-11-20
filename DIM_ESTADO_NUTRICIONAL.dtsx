@@ -1,0 +1,593 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="11/16/2026 08:24:42 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="EDUARDOBIT"
+  DTS:CreatorName="EDUARDOBIT\Eduardo"
+  DTS:DTSID="{A9FC8825-2EEB-4BFE-9152-F5305331CC25}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="3082"
+  DTS:ObjectName="DIM_ESTADO_NUTRICIONAL"
+  DTS:PackageType="5"
+  DTS:VersionBuild="1"
+  DTS:VersionGUID="{441895CE-3748-4A34-B66D-CCD56EF53B24}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+      DTS:ObjectName="OLEDB_DWH_UNICEF">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DWH_UNICEF;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DIM_ESTADO_NUTRICIONAL"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Contenedor de secuencias"
+      DTS:DTSID="{3C7A2D71-1D18-4EE2-A9F0-CC5D020C7956}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DIM_ESTADO_NUTRICIONAL">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\DIM_ESTADO_NUTRICIONAL\LIMPIA TMP_ESTADONUTRICIONAL"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{8B7D4EEB-8F95-45C9-BDE6-FB7CB7F4FBB5}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="LIMPIA TMP_ESTADONUTRICIONAL"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="TRUNCATE TABLE TMP_EstadoNutricional;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Tarea Flujo de datos"
+          DTS:DTSID="{E1F8B787-BC5F-4844-BB9D-498BB0E6C83A}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="CARGA DIM_ESTADO_NUTRICIONAL"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="Origen de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;7"
+                  description="Origen de OLE DB"
+                  name="ORIGEN SA_PERU"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset"></property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT
+       CAST(CASE WHEN dbo.fn_Num(T1.TALLA_SA) BETWEEN 45 AND 130 THEN 'CON MEDICION'
+                 ELSE 'SIN DATO' END AS VARCHAR(30)) AS Categoria
+FROM SA_PERU T1</property>
+                    <property dataType="System.String" description="Variable que contiene el comando SQL para ejecutar." name="SqlCommandVariable"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">2</property>
+                    <property dataType="System.String" description="Las asignaciones entre los parámetros del comando SQL y las variables." name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]"
+                      name="Salida de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]"
+                          codePage="1252" dataType="str" length="30"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Categoria]"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]"
+                          name="Categoria"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Categoria]"
+                          codePage="1252" dataType="str" length="30"
+                          name="Categoria" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB]"
+                      isErrorOut="true"
+                      name="Salida de error de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Categoria]"
+                          codePage="1252" dataType="str" length="30"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Categoria]"
+                          name="Categoria" />
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.Categoria
+FROM Dim_EstadoNutricional T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.Categoria
+FROM Dim_EstadoNutricional T1) [refTable]
+where [refTable].[Categoria] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;Categoria&quot; dataType=&quot;DT_STR&quot; length=&quot;30&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda].Columns[Categoria]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="30"
+                          cachedName="Categoria"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Categoria</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA DIM_ESTADONUTRICIONAL"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[Dim_EstadoNutricional]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[Categoria]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="30"
+                          cachedName="Categoria"
+                          externalMetadataColumnId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Categoria]"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstadoNutricional]"
+                          dataType="i4"
+                          name="IdEstadoNutricional" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Categoria]"
+                          codePage="1252" dataType="str" length="30"
+                          name="Categoria" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE CAMBIOS"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.Categoria
+FROM Dim_EstadoNutricional T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.Categoria
+FROM Dim_EstadoNutricional T1) [refTable]
+where [refTable].[Categoria] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;Categoria&quot; dataType=&quot;DT_STR&quot; length=&quot;30&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Categoria]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="30"
+                          cachedName="Categoria"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Categoria</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA TMP_ESTADONUTRICIONAL"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[TMP_EstadoNutricional]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[Categoria]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="30"
+                          cachedName="Categoria"
+                          externalMetadataColumnId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Categoria]"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Categoria]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstadoNutricional]"
+                          dataType="i4"
+                          name="IdEstadoNutricional" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Categoria]"
+                          codePage="1252" dataType="str" length="30"
+                          name="Categoria" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL.Paths[Salida de origen de OLE DB]"
+                  endId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                  name="Salida de origen de OLE DB"
+                  startId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]" />
+                <path
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL.Paths[Salida de entradas no coincidentes de búsqueda]"
+                  endId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA DIM_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda"
+                  startId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL.Paths[Salida de entradas coincidentes de búsqueda]"
+                  endId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                  name="Salida de entradas coincidentes de búsqueda"
+                  startId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL.Paths[Salida de entradas no coincidentes de búsqueda 1]"
+                  endId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\INSERTA TMP_ESTADONUTRICIONAL.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda 1"
+                  startId="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_ESTADO_NUTRICIONAL\ACTUALIZA DIM_ESTADONUTRICIONAL"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{C257E2A4-C06C-48DD-A45E-7D868586B784}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="ACTUALIZA DIM_ESTADONUTRICIONAL"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="-- ACTUALIZA DIM_ESTADONUTRICIONAL&#xA;UPDATE T1&#xA;SET T1.FechaActualizacion = GETDATE()&#xA;FROM Dim_EstadoNutricional T1 INNER JOIN TMP_EstadoNutricional T2 ON T1.Categoria = T2.Categoria;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_ESTADO_NUTRICIONAL.PrecedenceConstraints[Restricción]"
+          DTS:CreationName=""
+          DTS:DTSID="{4E99C19A-7144-4E16-876C-83E5411041B4}"
+          DTS:From="Package\DIM_ESTADO_NUTRICIONAL\LIMPIA TMP_ESTADONUTRICIONAL"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción"
+          DTS:To="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_ESTADO_NUTRICIONAL.PrecedenceConstraints[Restricción 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{562864C0-FC2F-431F-9014-E7CAF94C36ED}"
+          DTS:From="Package\DIM_ESTADO_NUTRICIONAL\CARGA DIM_ESTADO_NUTRICIONAL"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción 1"
+          DTS:To="Package\DIM_ESTADO_NUTRICIONAL\ACTUALIZA DIM_ESTADONUTRICIONAL" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+</DTS:Executable>

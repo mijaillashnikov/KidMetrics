@@ -1,0 +1,907 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="11/16/2026 08:24:42 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="EDUARDOBIT"
+  DTS:CreatorName="EDUARDOBIT\Eduardo"
+  DTS:DTSID="{CB959A3F-FC27-40A3-B013-B0B81233801D}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="3082"
+  DTS:ObjectName="DIM_TIEMPO"
+  DTS:PackageType="5"
+  DTS:VersionBuild="1"
+  DTS:VersionGUID="{CBA32428-46B5-49A0-92A9-4832D135B3F8}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+      DTS:ObjectName="OLEDB_DWH_UNICEF">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DWH_UNICEF;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DIM_TIEMPO"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Contenedor de secuencias"
+      DTS:DTSID="{E9448969-73F1-4B29-A4ED-9282D3A981E8}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DIM_TIEMPO">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\DIM_TIEMPO\LIMPIA TMP_TIEMPO"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{951F0108-5F4B-43B5-964A-C146DCBE10AA}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="LIMPIA TMP_TIEMPO"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="TRUNCATE TABLE TMP_Tiempo;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Tarea Flujo de datos"
+          DTS:DTSID="{1651190A-3DCC-4055-8AA0-A0F5859AF7EC}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="CARGA DIM_TIEMPO"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="Origen de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;7"
+                  description="Origen de OLE DB"
+                  name="ORIGEN SA_PERU"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset"></property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT  CAST(CONVERT(VARCHAR(8), C.Fecha, 112) AS INT)                     AS Fecha
+      , CAST(YEAR(C.Fecha) AS INT)                                         AS Anio
+      , CAST(MONTH(C.Fecha) AS INT)                                        AS Mes
+      , CAST(CHOOSE(MONTH(C.Fecha), 'ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO',
+                    'JULIO','AGOSTO','SETIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE') AS VARCHAR(12)) AS NombreMes
+      , CAST(DATEPART(QUARTER, C.Fecha) AS INT)                            AS Trimestre
+      , CAST(CASE WHEN MONTH(C.Fecha) &lt;= 6 THEN 1 ELSE 2 END AS INT)       AS Semestre
+      , CAST(CONCAT(YEAR(C.Fecha), '-', RIGHT('0' + CAST(MONTH(C.Fecha) AS VARCHAR(2)), 2)) AS VARCHAR(7)) AS PeriodoEstandarizado
+FROM
+    (
+        SELECT TOP (DATEDIFF(DAY, '2017-01-01', '2050-12-31') + 1)
+               DATEADD(DAY, ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1, CAST('2017-01-01' AS DATE)) AS Fecha
+        FROM sys.all_objects A
+        CROSS JOIN sys.all_objects B
+    ) C
+UNION ALL
+SELECT CAST(19000101 AS INT), CAST(1900 AS INT), CAST(0 AS INT), CAST('SIN FECHA' AS VARCHAR(12))
+     , CAST(0 AS INT), CAST(0 AS INT), CAST('SIN FEC' AS VARCHAR(7))</property>
+                    <property dataType="System.String" description="Variable que contiene el comando SQL para ejecutar." name="SqlCommandVariable"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">2</property>
+                    <property dataType="System.String" description="Las asignaciones entre los parámetros del comando SQL y las variables." name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]"
+                      name="Salida de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Fecha]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]"
+                          name="Fecha"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Anio]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Anio]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Anio]"
+                          name="Anio"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Mes]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Mes]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Mes]"
+                          name="Mes"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreMes]"
+                          codePage="1252" dataType="str" length="12"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[NombreMes]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreMes]"
+                          name="NombreMes"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Trimestre]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Trimestre]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Trimestre]"
+                          name="Trimestre"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Semestre]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Semestre]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Semestre]"
+                          name="Semestre"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PeriodoEstandarizado]"
+                          codePage="1252" dataType="str" length="7"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[PeriodoEstandarizado]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PeriodoEstandarizado]"
+                          name="PeriodoEstandarizado"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Fecha]"
+                          dataType="i4"
+                          name="Fecha" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Anio]"
+                          dataType="i4"
+                          name="Anio" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Mes]"
+                          dataType="i4"
+                          name="Mes" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[NombreMes]"
+                          codePage="1252" dataType="str" length="12"
+                          name="NombreMes" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Trimestre]"
+                          dataType="i4"
+                          name="Trimestre" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Semestre]"
+                          dataType="i4"
+                          name="Semestre" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[PeriodoEstandarizado]"
+                          codePage="1252" dataType="str" length="7"
+                          name="PeriodoEstandarizado" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB]"
+                      isErrorOut="true"
+                      name="Salida de error de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Fecha]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Fecha]"
+                          name="Fecha" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Anio]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Anio]"
+                          name="Anio" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Mes]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Mes]"
+                          name="Mes" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[NombreMes]"
+                          codePage="1252" dataType="str" length="12"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[NombreMes]"
+                          name="NombreMes" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Trimestre]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Trimestre]"
+                          name="Trimestre" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Semestre]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Semestre]"
+                          name="Semestre" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[PeriodoEstandarizado]"
+                          codePage="1252" dataType="str" length="7"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[PeriodoEstandarizado]"
+                          name="PeriodoEstandarizado" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.Fecha
+FROM Dim_Tiempo T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.Fecha
+FROM Dim_Tiempo T1) [refTable]
+where [refTable].[Fecha] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;Fecha&quot; dataType=&quot;DT_I4&quot; length=&quot;0&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;0&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda].Columns[Fecha]"
+                          cachedDataType="i4"
+                          cachedName="Fecha"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Fecha</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA DIM_TIEMPO"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[Dim_Tiempo]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Fecha]"
+                          cachedDataType="i4"
+                          cachedName="Fecha"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Anio]"
+                          cachedDataType="i4"
+                          cachedName="Anio"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Anio]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Anio]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Mes]"
+                          cachedDataType="i4"
+                          cachedName="Mes"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Mes]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Mes]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[NombreMes]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="12"
+                          cachedName="NombreMes"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreMes]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreMes]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Trimestre]"
+                          cachedDataType="i4"
+                          cachedName="Trimestre"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Trimestre]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Trimestre]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Semestre]"
+                          cachedDataType="i4"
+                          cachedName="Semestre"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Semestre]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Semestre]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[PeriodoEstandarizado]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="7"
+                          cachedName="PeriodoEstandarizado"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[PeriodoEstandarizado]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PeriodoEstandarizado]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdTiempo]"
+                          dataType="i4"
+                          name="IdTiempo" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
+                          dataType="i4"
+                          name="Fecha" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Anio]"
+                          dataType="i4"
+                          name="Anio" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Mes]"
+                          dataType="i4"
+                          name="Mes" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreMes]"
+                          codePage="1252" dataType="str" length="12"
+                          name="NombreMes" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Trimestre]"
+                          dataType="i4"
+                          name="Trimestre" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Semestre]"
+                          dataType="i4"
+                          name="Semestre" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[PeriodoEstandarizado]"
+                          codePage="1252" dataType="str" length="7"
+                          name="PeriodoEstandarizado" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE CAMBIOS"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.Fecha
+     , T1.Anio
+     , T1.Mes
+     , T1.NombreMes
+     , T1.Trimestre
+     , T1.Semestre
+     , T1.PeriodoEstandarizado
+FROM Dim_Tiempo T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.Fecha
+     , T1.Anio
+     , T1.Mes
+     , T1.NombreMes
+     , T1.Trimestre
+     , T1.Semestre
+     , T1.PeriodoEstandarizado
+FROM Dim_Tiempo T1) [refTable]
+where [refTable].[Fecha] = ? and [refTable].[Anio] = ? and [refTable].[Mes] = ? and [refTable].[NombreMes] = ? and [refTable].[Trimestre] = ? and [refTable].[Semestre] = ? and [refTable].[PeriodoEstandarizado] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;Fecha&quot; dataType=&quot;DT_I4&quot; length=&quot;0&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;0&quot;/&gt;&lt;referenceColumn name=&quot;Anio&quot; dataType=&quot;DT_I4&quot; length=&quot;0&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;0&quot;/&gt;&lt;referenceColumn name=&quot;Mes&quot; dataType=&quot;DT_I4&quot; length=&quot;0&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;0&quot;/&gt;&lt;referenceColumn name=&quot;NombreMes&quot; dataType=&quot;DT_STR&quot; length=&quot;12&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Trimestre&quot; dataType=&quot;DT_I4&quot; length=&quot;0&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;0&quot;/&gt;&lt;referenceColumn name=&quot;Semestre&quot; dataType=&quot;DT_I4&quot; length=&quot;0&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;0&quot;/&gt;&lt;referenceColumn name=&quot;PeriodoEstandarizado&quot; dataType=&quot;DT_STR&quot; length=&quot;7&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]};#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Anio]};#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Mes]};#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreMes]};#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Trimestre]};#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Semestre]};#{Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PeriodoEstandarizado]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Fecha]"
+                          cachedDataType="i4"
+                          cachedName="Fecha"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Fecha</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Anio]"
+                          cachedDataType="i4"
+                          cachedName="Anio"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Anio]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Anio</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Mes]"
+                          cachedDataType="i4"
+                          cachedName="Mes"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Mes]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Mes</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[NombreMes]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="12"
+                          cachedName="NombreMes"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreMes]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">NombreMes</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Trimestre]"
+                          cachedDataType="i4"
+                          cachedName="Trimestre"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Trimestre]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Trimestre</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Semestre]"
+                          cachedDataType="i4"
+                          cachedName="Semestre"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Semestre]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Semestre</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[PeriodoEstandarizado]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="7"
+                          cachedName="PeriodoEstandarizado"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PeriodoEstandarizado]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">PeriodoEstandarizado</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA TMP_TIEMPO"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[TMP_Tiempo]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Fecha]"
+                          cachedDataType="i4"
+                          cachedName="Fecha"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Fecha]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Anio]"
+                          cachedDataType="i4"
+                          cachedName="Anio"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Anio]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Anio]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Mes]"
+                          cachedDataType="i4"
+                          cachedName="Mes"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Mes]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Mes]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[NombreMes]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="12"
+                          cachedName="NombreMes"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreMes]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreMes]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Trimestre]"
+                          cachedDataType="i4"
+                          cachedName="Trimestre"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Trimestre]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Trimestre]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[Semestre]"
+                          cachedDataType="i4"
+                          cachedName="Semestre"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Semestre]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Semestre]" />
+                        <inputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].Columns[PeriodoEstandarizado]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="7"
+                          cachedName="PeriodoEstandarizado"
+                          externalMetadataColumnId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[PeriodoEstandarizado]"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PeriodoEstandarizado]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdTiempo]"
+                          dataType="i4"
+                          name="IdTiempo" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
+                          dataType="i4"
+                          name="Fecha" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Anio]"
+                          dataType="i4"
+                          name="Anio" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Mes]"
+                          dataType="i4"
+                          name="Mes" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreMes]"
+                          codePage="1252" dataType="str" length="12"
+                          name="NombreMes" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Trimestre]"
+                          dataType="i4"
+                          name="Trimestre" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Semestre]"
+                          dataType="i4"
+                          name="Semestre" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[PeriodoEstandarizado]"
+                          codePage="1252" dataType="str" length="7"
+                          name="PeriodoEstandarizado" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO.Paths[Salida de origen de OLE DB]"
+                  endId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                  name="Salida de origen de OLE DB"
+                  startId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]" />
+                <path
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO.Paths[Salida de entradas no coincidentes de búsqueda]"
+                  endId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA DIM_TIEMPO.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda"
+                  startId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO.Paths[Salida de entradas coincidentes de búsqueda]"
+                  endId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                  name="Salida de entradas coincidentes de búsqueda"
+                  startId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO.Paths[Salida de entradas no coincidentes de búsqueda 1]"
+                  endId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\INSERTA TMP_TIEMPO.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda 1"
+                  startId="Package\DIM_TIEMPO\CARGA DIM_TIEMPO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_TIEMPO\ACTUALIZA DIM_TIEMPO"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{309B7853-4C95-41B7-97AB-CDA40E04DFE6}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="ACTUALIZA DIM_TIEMPO"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="-- ACTUALIZA DIM_TIEMPO&#xA;UPDATE T1&#xA;SET T1.Anio = T2.Anio&#xA;  , T1.Mes = T2.Mes&#xA;  , T1.NombreMes = T2.NombreMes&#xA;  , T1.Trimestre = T2.Trimestre&#xA;  , T1.Semestre = T2.Semestre&#xA;  , T1.PeriodoEstandarizado = T2.PeriodoEstandarizado&#xA;  , T1.FechaActualizacion = GETDATE()&#xA;FROM Dim_Tiempo T1 INNER JOIN TMP_Tiempo T2 ON T1.Fecha = T2.Fecha;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_TIEMPO.PrecedenceConstraints[Restricción]"
+          DTS:CreationName=""
+          DTS:DTSID="{200758E8-794A-4A46-9293-5EEEF3370846}"
+          DTS:From="Package\DIM_TIEMPO\LIMPIA TMP_TIEMPO"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción"
+          DTS:To="Package\DIM_TIEMPO\CARGA DIM_TIEMPO" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_TIEMPO.PrecedenceConstraints[Restricción 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{41817024-10C5-40F4-BA02-0855CF4C32C4}"
+          DTS:From="Package\DIM_TIEMPO\CARGA DIM_TIEMPO"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción 1"
+          DTS:To="Package\DIM_TIEMPO\ACTUALIZA DIM_TIEMPO" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+</DTS:Executable>

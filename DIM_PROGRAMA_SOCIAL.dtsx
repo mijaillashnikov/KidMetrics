@@ -1,0 +1,781 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="11/16/2026 08:24:42 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="EDUARDOBIT"
+  DTS:CreatorName="EDUARDOBIT\Eduardo"
+  DTS:DTSID="{F1281949-BE3A-41E1-8140-8BD240417E59}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="3082"
+  DTS:ObjectName="DIM_PROGRAMA_SOCIAL"
+  DTS:PackageType="5"
+  DTS:VersionBuild="1"
+  DTS:VersionGUID="{C9F12497-F887-4363-ADB2-CDBDC390757E}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+      DTS:ObjectName="OLEDB_DWH_UNICEF">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DWH_UNICEF;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DIM_PROGRAMA_SOCIAL"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Contenedor de secuencias"
+      DTS:DTSID="{D49CC260-6336-4190-A5C1-3CACB9617608}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DIM_PROGRAMA_SOCIAL">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\DIM_PROGRAMA_SOCIAL\LIMPIA TMP_PROGRAMASOCIAL"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{5309E6E9-9265-4B82-A44C-3A2C8714A409}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="LIMPIA TMP_PROGRAMASOCIAL"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="TRUNCATE TABLE TMP_ProgramaSocial;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Tarea Flujo de datos"
+          DTS:DTSID="{C4596463-B12F-4FB3-ACC4-6D7286212B8A}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="CARGA DIM_PROGRAMA_SOCIAL"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="Origen de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;7"
+                  description="Origen de OLE DB"
+                  name="ORIGEN SA_PERU"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset"></property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT
+       CAST(CASE CAST(dbo.fn_Num(T1.SIS_SA) AS INT)       WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS SIS
+     , CAST(CASE CAST(dbo.fn_Num(T1.JUNTOS_SA) AS INT)    WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS Juntos
+     , CAST(CASE CAST(dbo.fn_Num(T1.QALIWARMA_SA) AS INT) WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS QaliWarma
+     , CAST(CASE CAST(dbo.fn_Num(T1.PIN_SA) AS INT)       WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS Pin
+FROM SA_PERU T1</property>
+                    <property dataType="System.String" description="Variable que contiene el comando SQL para ejecutar." name="SqlCommandVariable"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">2</property>
+                    <property dataType="System.String" description="Las asignaciones entre los parámetros del comando SQL y las variables." name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]"
+                      name="Salida de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]"
+                          codePage="1252" dataType="str" length="1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[SIS]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]"
+                          name="SIS"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]"
+                          codePage="1252" dataType="str" length="1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Juntos]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]"
+                          name="Juntos"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]"
+                          codePage="1252" dataType="str" length="1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[QaliWarma]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]"
+                          name="QaliWarma"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]"
+                          codePage="1252" dataType="str" length="1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Pin]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]"
+                          name="Pin"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[SIS]"
+                          codePage="1252" dataType="str" length="1"
+                          name="SIS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Juntos]"
+                          codePage="1252" dataType="str" length="1"
+                          name="Juntos" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[QaliWarma]"
+                          codePage="1252" dataType="str" length="1"
+                          name="QaliWarma" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Pin]"
+                          codePage="1252" dataType="str" length="1"
+                          name="Pin" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB]"
+                      isErrorOut="true"
+                      name="Salida de error de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[SIS]"
+                          codePage="1252" dataType="str" length="1"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[SIS]"
+                          name="SIS" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Juntos]"
+                          codePage="1252" dataType="str" length="1"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Juntos]"
+                          name="Juntos" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[QaliWarma]"
+                          codePage="1252" dataType="str" length="1"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[QaliWarma]"
+                          name="QaliWarma" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Pin]"
+                          codePage="1252" dataType="str" length="1"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Pin]"
+                          name="Pin" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.SIS
+     , T1.Juntos
+     , T1.QaliWarma
+     , T1.Pin
+FROM Dim_ProgramaSocial T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.SIS
+     , T1.Juntos
+     , T1.QaliWarma
+     , T1.Pin
+FROM Dim_ProgramaSocial T1) [refTable]
+where [refTable].[SIS] = ? and [refTable].[Juntos] = ? and [refTable].[QaliWarma] = ? and [refTable].[Pin] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;SIS&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Juntos&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;QaliWarma&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Pin&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]};#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]};#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]};#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda].Columns[SIS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="SIS"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">SIS</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda].Columns[Juntos]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Juntos"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Juntos</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda].Columns[QaliWarma]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="QaliWarma"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">QaliWarma</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda].Columns[Pin]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Pin"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Pin</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA DIM_PROGRAMASOCIAL"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[Dim_ProgramaSocial]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[SIS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="SIS"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[SIS]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]" />
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[Juntos]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Juntos"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Juntos]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]" />
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[QaliWarma]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="QaliWarma"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[QaliWarma]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]" />
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[Pin]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Pin"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Pin]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdProgramaSocial]"
+                          dataType="i4"
+                          name="IdProgramaSocial" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[SIS]"
+                          codePage="1252" dataType="str" length="1"
+                          name="SIS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Juntos]"
+                          codePage="1252" dataType="str" length="1"
+                          name="Juntos" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[QaliWarma]"
+                          codePage="1252" dataType="str" length="1"
+                          name="QaliWarma" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Pin]"
+                          codePage="1252" dataType="str" length="1"
+                          name="Pin" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE CAMBIOS"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.SIS
+     , T1.Juntos
+     , T1.QaliWarma
+     , T1.Pin
+FROM Dim_ProgramaSocial T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.SIS
+     , T1.Juntos
+     , T1.QaliWarma
+     , T1.Pin
+FROM Dim_ProgramaSocial T1) [refTable]
+where [refTable].[SIS] = ? and [refTable].[Juntos] = ? and [refTable].[QaliWarma] = ? and [refTable].[Pin] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;SIS&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Juntos&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;QaliWarma&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Pin&quot; dataType=&quot;DT_STR&quot; length=&quot;1&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]};#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]};#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]};#{Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[SIS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="SIS"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">SIS</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Juntos]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Juntos"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Juntos</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[QaliWarma]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="QaliWarma"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">QaliWarma</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Pin]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Pin"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Pin</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA TMP_PROGRAMASOCIAL"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[TMP_ProgramaSocial]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[SIS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="SIS"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[SIS]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[SIS]" />
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[Juntos]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Juntos"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Juntos]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Juntos]" />
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[QaliWarma]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="QaliWarma"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[QaliWarma]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[QaliWarma]" />
+                        <inputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].Columns[Pin]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="1"
+                          cachedName="Pin"
+                          externalMetadataColumnId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Pin]"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Pin]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdProgramaSocial]"
+                          dataType="i4"
+                          name="IdProgramaSocial" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[SIS]"
+                          codePage="1252" dataType="str" length="1"
+                          name="SIS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Juntos]"
+                          codePage="1252" dataType="str" length="1"
+                          name="Juntos" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[QaliWarma]"
+                          codePage="1252" dataType="str" length="1"
+                          name="QaliWarma" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[Pin]"
+                          codePage="1252" dataType="str" length="1"
+                          name="Pin" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL.Paths[Salida de origen de OLE DB]"
+                  endId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                  name="Salida de origen de OLE DB"
+                  startId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]" />
+                <path
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL.Paths[Salida de entradas no coincidentes de búsqueda]"
+                  endId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA DIM_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda"
+                  startId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL.Paths[Salida de entradas coincidentes de búsqueda]"
+                  endId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                  name="Salida de entradas coincidentes de búsqueda"
+                  startId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL.Paths[Salida de entradas no coincidentes de búsqueda 1]"
+                  endId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\INSERTA TMP_PROGRAMASOCIAL.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda 1"
+                  startId="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_PROGRAMA_SOCIAL\ACTUALIZA DIM_PROGRAMASOCIAL"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{DBB90B01-C98C-49E6-92A5-1253D89368D8}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="ACTUALIZA DIM_PROGRAMASOCIAL"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{5DBBEE8E-3FED-4FCA-AA97-85FF5D1FCF2A}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="-- ACTUALIZA DIM_PROGRAMASOCIAL&#xA;UPDATE T1&#xA;SET T1.FechaActualizacion = GETDATE()&#xA;FROM Dim_ProgramaSocial T1 INNER JOIN TMP_ProgramaSocial T2 ON T1.SIS = T2.SIS AND T1.Juntos = T2.Juntos AND T1.QaliWarma = T2.QaliWarma AND T1.Pin = T2.Pin;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_PROGRAMA_SOCIAL.PrecedenceConstraints[Restricción]"
+          DTS:CreationName=""
+          DTS:DTSID="{24FE5CA6-9B86-4E4C-A618-C5406FE2F806}"
+          DTS:From="Package\DIM_PROGRAMA_SOCIAL\LIMPIA TMP_PROGRAMASOCIAL"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción"
+          DTS:To="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_PROGRAMA_SOCIAL.PrecedenceConstraints[Restricción 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{BC263325-4531-45FF-ADE1-36CF296B832D}"
+          DTS:From="Package\DIM_PROGRAMA_SOCIAL\CARGA DIM_PROGRAMA_SOCIAL"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción 1"
+          DTS:To="Package\DIM_PROGRAMA_SOCIAL\ACTUALIZA DIM_PROGRAMASOCIAL" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+</DTS:Executable>

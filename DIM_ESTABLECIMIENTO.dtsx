@@ -1,0 +1,1031 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="11/13/2026 12:31:12 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="EDUARDOBIT"
+  DTS:CreatorName="EDUARDOBIT\Eduardo"
+  DTS:DTSID="{72927D5D-C913-41FB-A045-7BD6B1A6ADDA}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="3082"
+  DTS:ObjectName="DIM_ESTABLECIMIENTO"
+  DTS:PackageType="5"
+  DTS:VersionBuild="1"
+  DTS:VersionGUID="{50A46C0A-ECD6-4001-A180-CA2BFFC1AB42}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{7F119B7D-4B55-400B-B357-7E44ECB47AA3}"
+      DTS:ObjectName="OLEDB_DWH_UNICEF">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DWH_UNICEF;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\DIM_ESTABLECIMIENTO"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Contenedor de secuencias"
+      DTS:DTSID="{7CC2166E-29EE-4073-872B-716A4B0280EA}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DIM_ESTABLECIMIENTO">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\DIM_ESTABLECIMIENTO\LIMPIA TMP_ESTABLECIMIENTO"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{E7CD7EA5-6528-4218-8256-3D6DB9B21F07}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="LIMPIA TMP_ESTABLECIMIENTO"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{7F119B7D-4B55-400B-B357-7E44ECB47AA3}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="TRUNCATE TABLE TMP_Establecimiento;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Tarea Flujo de datos"
+          DTS:DTSID="{22B95C72-6579-495F-82B4-9398A6D1BE3F}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="CARGA DIM_ESTABLECIMIENTO"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="Origen de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;7"
+                  description="Origen de OLE DB"
+                  name="ORIGEN SA_PERU"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset"></property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT  T1.CodRenipress
+      , T1.NombreEESS
+      , T1.CategoriaEESS
+      , T1.Diresa
+      , T1.Red
+      , T1.Microred
+      , T1.Departamento
+      , T1.Provincia
+      , T1.Distrito
+FROM
+    (
+        SELECT ROW_NUMBER() OVER (PARTITION BY T1.CodRenipress
+                                  ORDER BY T1.Cantidad DESC, T1.NombreEESS, T1.CategoriaEESS, T1.Diresa, T1.Red
+                                         , T1.Microred, T1.Departamento, T1.Provincia, T1.Distrito) AS NRO
+             , T1.*
+        FROM
+            (
+                SELECT T1.CodRenipress, T1.NombreEESS, T1.CategoriaEESS, T1.Diresa, T1.Red
+                     , T1.Microred, T1.Departamento, T1.Provincia, T1.Distrito
+                     , COUNT(*) AS Cantidad
+                FROM
+                    (
+                        SELECT CAST(RIGHT('00000000' + CAST(CAST(dbo.fn_Num(T1.RENIPRESS_SA) AS INT) AS VARCHAR(8)), 8) AS VARCHAR(8))   AS CodRenipress
+                             , CAST(ISNULL(NULLIF(CASE WHEN B.P2 &gt; 0 THEN UPPER(TRIM(SUBSTRING(T1.EESS_SA, B.P2 + 3, 150)))
+                                                       ELSE UPPER(TRIM(T1.EESS_SA)) END, ''), 'SIN DATO') AS VARCHAR(150))         AS NombreEESS
+                             , CAST(ISNULL(NULLIF(CASE WHEN A.P1 &gt; 0 THEN UPPER(TRIM(LEFT(T1.EESS_SA, A.P1 - 1))) END, ''), 'SIN DATO') AS VARCHAR(10)) AS CategoriaEESS
+                             , CAST(ISNULL(NULLIF(UPPER(TRIM(T1.DIRESA_SA)), ''), 'SIN DATO')    AS VARCHAR(100))  AS Diresa
+                             , CAST(ISNULL(NULLIF(UPPER(TRIM(T1.RED_SA)), ''), 'SIN DATO')       AS VARCHAR(100))  AS Red
+                             , CAST(ISNULL(NULLIF(UPPER(TRIM(T1.MICRORED_SA)), ''), 'SIN DATO')  AS VARCHAR(100))  AS Microred
+                             , CAST(ISNULL(NULLIF(UPPER(TRIM(T1.DPTO_EESS_SA)), ''), 'SIN DATO') AS VARCHAR(50))   AS Departamento
+                             , CAST(ISNULL(NULLIF(UPPER(TRIM(T1.PROV_EESS_SA)), ''), 'SIN DATO') AS VARCHAR(80))   AS Provincia
+                             , CAST(ISNULL(NULLIF(UPPER(TRIM(T1.DIST_EESS_SA)), ''), 'SIN DATO') AS VARCHAR(80))   AS Distrito
+                        FROM SA_PERU T1
+                        CROSS APPLY (SELECT CHARINDEX(' - ', T1.EESS_SA) AS P1) A
+                        CROSS APPLY (SELECT CASE WHEN A.P1 &gt; 0 THEN CHARINDEX(' - ', T1.EESS_SA, A.P1 + 3) ELSE 0 END AS P2) B
+                        WHERE dbo.fn_Num(T1.RENIPRESS_SA) &gt; 0
+                    ) T1
+                GROUP BY T1.CodRenipress, T1.NombreEESS, T1.CategoriaEESS, T1.Diresa, T1.Red
+                       , T1.Microred, T1.Departamento, T1.Provincia, T1.Distrito
+            ) T1
+    ) T1
+WHERE T1.NRO = 1</property>
+                    <property dataType="System.String" description="Variable que contiene el comando SQL para ejecutar." name="SqlCommandVariable"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">2</property>
+                    <property dataType="System.String" description="Las asignaciones entre los parámetros del comando SQL y las variables." name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]"
+                      name="Salida de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]"
+                          codePage="1252" dataType="str" length="8"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[CodRenipress]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]"
+                          name="CodRenipress"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreEESS]"
+                          codePage="1252" dataType="str" length="150"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[NombreEESS]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreEESS]"
+                          name="NombreEESS"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CategoriaEESS]"
+                          codePage="1252" dataType="str" length="10"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[CategoriaEESS]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CategoriaEESS]"
+                          name="CategoriaEESS"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Diresa]"
+                          codePage="1252" dataType="str" length="100"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Diresa]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Diresa]"
+                          name="Diresa"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Red]"
+                          codePage="1252" dataType="str" length="100"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Red]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Red]"
+                          name="Red"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Microred]"
+                          codePage="1252" dataType="str" length="100"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Microred]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Microred]"
+                          name="Microred"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Departamento]"
+                          codePage="1252" dataType="str" length="50"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Departamento]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Departamento]"
+                          name="Departamento"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Provincia]"
+                          codePage="1252" dataType="str" length="80"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Provincia]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Provincia]"
+                          name="Provincia"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Distrito]"
+                          codePage="1252" dataType="str" length="80"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Distrito]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Distrito]"
+                          name="Distrito"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[CodRenipress]"
+                          codePage="1252" dataType="str" length="8"
+                          name="CodRenipress" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[NombreEESS]"
+                          codePage="1252" dataType="str" length="150"
+                          name="NombreEESS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[CategoriaEESS]"
+                          codePage="1252" dataType="str" length="10"
+                          name="CategoriaEESS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Diresa]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Diresa" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Red]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Red" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Microred]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Microred" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Departamento]"
+                          codePage="1252" dataType="str" length="50"
+                          name="Departamento" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Provincia]"
+                          codePage="1252" dataType="str" length="80"
+                          name="Provincia" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[Distrito]"
+                          codePage="1252" dataType="str" length="80"
+                          name="Distrito" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB]"
+                      isErrorOut="true"
+                      name="Salida de error de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[CodRenipress]"
+                          codePage="1252" dataType="str" length="8"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[CodRenipress]"
+                          name="CodRenipress" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[NombreEESS]"
+                          codePage="1252" dataType="str" length="150"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[NombreEESS]"
+                          name="NombreEESS" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[CategoriaEESS]"
+                          codePage="1252" dataType="str" length="10"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[CategoriaEESS]"
+                          name="CategoriaEESS" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Diresa]"
+                          codePage="1252" dataType="str" length="100"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Diresa]"
+                          name="Diresa" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Red]"
+                          codePage="1252" dataType="str" length="100"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Red]"
+                          name="Red" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Microred]"
+                          codePage="1252" dataType="str" length="100"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Microred]"
+                          name="Microred" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Departamento]"
+                          codePage="1252" dataType="str" length="50"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Departamento]"
+                          name="Departamento" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Provincia]"
+                          codePage="1252" dataType="str" length="80"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Provincia]"
+                          name="Provincia" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Distrito]"
+                          codePage="1252" dataType="str" length="80"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[Distrito]"
+                          name="Distrito" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.CodRenipress
+FROM Dim_Establecimiento T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.CodRenipress
+FROM Dim_Establecimiento T1) [refTable]
+where [refTable].[CodRenipress] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;CodRenipress&quot; dataType=&quot;DT_STR&quot; length=&quot;8&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda].Columns[CodRenipress]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="8"
+                          cachedName="CodRenipress"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">CodRenipress</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA DIM_ESTABLECIMIENTO"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[Dim_Establecimiento]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[CodRenipress]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="8"
+                          cachedName="CodRenipress"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CodRenipress]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[NombreEESS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="150"
+                          cachedName="NombreEESS"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreEESS]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreEESS]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[CategoriaEESS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="10"
+                          cachedName="CategoriaEESS"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CategoriaEESS]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CategoriaEESS]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Diresa]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Diresa"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Diresa]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Diresa]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Red]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Red"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Red]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Red]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Microred]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Microred"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Microred]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Microred]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Departamento]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="50"
+                          cachedName="Departamento"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Departamento]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Departamento]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Provincia]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="80"
+                          cachedName="Provincia"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Provincia]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Provincia]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Distrito]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="80"
+                          cachedName="Distrito"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Distrito]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Distrito]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstablecimiento]"
+                          dataType="i4"
+                          name="IdEstablecimiento" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CodRenipress]"
+                          codePage="1252" dataType="str" length="8"
+                          name="CodRenipress" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreEESS]"
+                          codePage="1252" dataType="str" length="150"
+                          name="NombreEESS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CategoriaEESS]"
+                          codePage="1252" dataType="str" length="10"
+                          name="CategoriaEESS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Diresa]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Diresa" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Red]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Red" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Microred]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Microred" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Departamento]"
+                          codePage="1252" dataType="str" length="50"
+                          name="Departamento" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Provincia]"
+                          codePage="1252" dataType="str" length="80"
+                          name="Provincia" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Distrito]"
+                          codePage="1252" dataType="str" length="80"
+                          name="Distrito" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS"
+                  componentClassID="Microsoft.Lookup"
+                  contactInfo="Búsqueda;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;6"
+                  description="Combina columnas adicionales con el flujo de datos buscando valores en una tabla. Por ejemplo, combinar con la columna 'employee id' de la tabla de empleados para obtener la fecha de contratación y el nombre del empleado."
+                  name="VALIDA SI EXISTE CAMBIOS"
+                  usesDispositions="true"
+                  version="6">
+                  <properties>
+                    <property dataType="System.String" description="Especifica la instrucción SQL que genera el conjunto de datos de referencia." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT T1.CodRenipress
+     , T1.NombreEESS
+     , T1.CategoriaEESS
+     , T1.Diresa
+     , T1.Red
+     , T1.Microred
+     , T1.Departamento
+     , T1.Provincia
+     , T1.Distrito
+FROM Dim_Establecimiento T1</property>
+                    <property dataType="System.String" description="Especifica la instrucción SQL parametrizada que se usa para rellenar la caché de búsqueda." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (SELECT T1.CodRenipress
+     , T1.NombreEESS
+     , T1.CategoriaEESS
+     , T1.Diresa
+     , T1.Red
+     , T1.Microred
+     , T1.Departamento
+     , T1.Provincia
+     , T1.Distrito
+FROM Dim_Establecimiento T1) [refTable]
+where [refTable].[CodRenipress] = ? and [refTable].[NombreEESS] = ? and [refTable].[CategoriaEESS] = ? and [refTable].[Diresa] = ? and [refTable].[Red] = ? and [refTable].[Microred] = ? and [refTable].[Departamento] = ? and [refTable].[Provincia] = ? and [refTable].[Distrito] = ?</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de conexión que se usa para obtener acceso al conjunto de datos de referencia." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                    <property dataType="System.Int32" description="Especifica el tipo de caché de la tabla de búsqueda." name="CacheType" typeConverter="CacheType">0</property>
+                    <property dataType="System.Int32" description="Especifica cómo se controlan las filas sin entradas coincidentes" name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                    <property dataType="System.Int32" description="Especifica el porcentaje de la memoria caché asignado a filas sin entradas coincidentes en la tabla de referencia." name="NoMatchCachePercentage">0</property>
+                    <property dataType="System.Int32" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 32 bits." name="MaxMemoryUsage">25</property>
+                    <property dataType="System.Int64" description="Especifica la cantidad máxima de memoria (en MB) para la caché de búsqueda en equipos de 64 bits." name="MaxMemoryUsage64">25</property>
+                    <property dataType="System.String" description="Especifica los metadatos de columna para el conjunto de datos de referencia." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name=&quot;CodRenipress&quot; dataType=&quot;DT_STR&quot; length=&quot;8&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;NombreEESS&quot; dataType=&quot;DT_STR&quot; length=&quot;150&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;CategoriaEESS&quot; dataType=&quot;DT_STR&quot; length=&quot;10&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Diresa&quot; dataType=&quot;DT_STR&quot; length=&quot;100&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Red&quot; dataType=&quot;DT_STR&quot; length=&quot;100&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Microred&quot; dataType=&quot;DT_STR&quot; length=&quot;100&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Departamento&quot; dataType=&quot;DT_STR&quot; length=&quot;50&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Provincia&quot; dataType=&quot;DT_STR&quot; length=&quot;80&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;referenceColumn name=&quot;Distrito&quot; dataType=&quot;DT_STR&quot; length=&quot;80&quot; precision=&quot;0&quot; scale=&quot;0&quot; codePage=&quot;1252&quot;/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                    <property containsID="true" dataType="System.String" description="Especifica la asignación entre los parámetros de entrada y los parámetros de la instrucción SQL." name="ParameterMap">#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreEESS]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CategoriaEESS]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Diresa]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Red]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Microred]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Departamento]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Provincia]};#{Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Distrito]};</property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Indica si se deben tratar las claves duplicadas del conjunto de datos de referencia como errores en el modo de caché completa." name="TreatDuplicateKeysAsError">false</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="Conexión OLE DB usada para obtener acceso a los datos de búsqueda."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                      description="Entrada de búsqueda"
+                      name="Entrada de búsqueda">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[CodRenipress]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="8"
+                          cachedName="CodRenipress"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">CodRenipress</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[NombreEESS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="150"
+                          cachedName="NombreEESS"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreEESS]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">NombreEESS</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[CategoriaEESS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="10"
+                          cachedName="CategoriaEESS"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CategoriaEESS]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">CategoriaEESS</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Diresa]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Diresa"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Diresa]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Diresa</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Red]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Red"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Red]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Red</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Microred]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Microred"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Microred]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Microred</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Departamento]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="50"
+                          cachedName="Departamento"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Departamento]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Departamento</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Provincia]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="80"
+                          cachedName="Provincia"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Provincia]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Provincia</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda].Columns[Distrito]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="80"
+                          cachedName="Distrito"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Distrito]">
+                          <properties>
+                            <property dataType="System.String" description="Especifica la columna en la tabla de referencia a la que se combina la columna." name="JoinToReferenceColumn">Distrito</property>
+                            <property dataType="System.Null" description="Especifica la columna de la tabla de referencia desde la que se copia una columna." name="CopyFromReferenceColumn" />
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas coincidentes de búsqueda]"
+                      description="Salida de entradas coincidentes de búsqueda"
+                      errorOrTruncationOperation="Búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]"
+                      description="Salida de entradas no coincidentes de búsqueda"
+                      exclusionGroup="1"
+                      name="Salida de entradas no coincidentes de búsqueda"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda]"
+                      description="Salida de error de búsqueda"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de búsqueda"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de error de búsqueda].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA TMP_ESTABLECIMIENTO"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[TMP_Establecimiento]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino. Si es False, las columnas que contienen NULL tendrán sus valores predeterminados insertados en el destino. Solo se aplica si está activada la carga rápida." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[CodRenipress]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="8"
+                          cachedName="CodRenipress"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CodRenipress]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CodRenipress]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[NombreEESS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="150"
+                          cachedName="NombreEESS"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreEESS]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[NombreEESS]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[CategoriaEESS]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="10"
+                          cachedName="CategoriaEESS"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CategoriaEESS]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[CategoriaEESS]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Diresa]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Diresa"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Diresa]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Diresa]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Red]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Red"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Red]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Red]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Microred]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="100"
+                          cachedName="Microred"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Microred]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Microred]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Departamento]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="50"
+                          cachedName="Departamento"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Departamento]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Departamento]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Provincia]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="80"
+                          cachedName="Provincia"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Provincia]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Provincia]" />
+                        <inputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].Columns[Distrito]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="80"
+                          cachedName="Distrito"
+                          externalMetadataColumnId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Distrito]"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[Distrito]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstablecimiento]"
+                          dataType="i4"
+                          name="IdEstablecimiento" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CodRenipress]"
+                          codePage="1252" dataType="str" length="8"
+                          name="CodRenipress" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[NombreEESS]"
+                          codePage="1252" dataType="str" length="150"
+                          name="NombreEESS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[CategoriaEESS]"
+                          codePage="1252" dataType="str" length="10"
+                          name="CategoriaEESS" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Diresa]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Diresa" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Red]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Red" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Microred]"
+                          codePage="1252" dataType="str" length="100"
+                          name="Microred" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Departamento]"
+                          codePage="1252" dataType="str" length="50"
+                          name="Departamento" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Provincia]"
+                          codePage="1252" dataType="str" length="80"
+                          name="Provincia" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[Distrito]"
+                          codePage="1252" dataType="str" length="80"
+                          name="Distrito" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO.Paths[Salida de origen de OLE DB]"
+                  endId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Inputs[Entrada de búsqueda]"
+                  name="Salida de origen de OLE DB"
+                  startId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]" />
+                <path
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO.Paths[Salida de entradas no coincidentes de búsqueda]"
+                  endId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA DIM_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda"
+                  startId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO.Paths[Salida de entradas coincidentes de búsqueda]"
+                  endId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Inputs[Entrada de búsqueda]"
+                  name="Salida de entradas coincidentes de búsqueda"
+                  startId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE.Outputs[Salida de entradas coincidentes de búsqueda]" />
+                <path
+                  refId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO.Paths[Salida de entradas no coincidentes de búsqueda 1]"
+                  endId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\INSERTA TMP_ESTABLECIMIENTO.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de entradas no coincidentes de búsqueda 1"
+                  startId="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO\VALIDA SI EXISTE CAMBIOS.Outputs[Salida de entradas no coincidentes de búsqueda]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\DIM_ESTABLECIMIENTO\ACTUALIZA DIM_ESTABLECIMIENTO"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{0ED0DA8E-6562-4B17-943A-CC7B9933F453}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="ACTUALIZA DIM_ESTABLECIMIENTO"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{7F119B7D-4B55-400B-B357-7E44ECB47AA3}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="-- ACTUALIZA DIM_ESTABLECIMIENTO&#xA;UPDATE T1&#xA;SET T1.NombreEESS = T2.NombreEESS&#xA;  , T1.CategoriaEESS = T2.CategoriaEESS&#xA;  , T1.Diresa = T2.Diresa&#xA;  , T1.Red = T2.Red&#xA;  , T1.Microred = T2.Microred&#xA;  , T1.Departamento = T2.Departamento&#xA;  , T1.Provincia = T2.Provincia&#xA;  , T1.Distrito = T2.Distrito&#xA;  , T1.FechaActualizacion = GETDATE()&#xA;FROM Dim_Establecimiento T1 INNER JOIN TMP_Establecimiento T2 ON T1.CodRenipress = T2.CodRenipress;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_ESTABLECIMIENTO.PrecedenceConstraints[Restricción]"
+          DTS:CreationName=""
+          DTS:DTSID="{B7C1A963-395C-4727-BC95-E719927C0B79}"
+          DTS:From="Package\DIM_ESTABLECIMIENTO\LIMPIA TMP_ESTABLECIMIENTO"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción"
+          DTS:To="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\DIM_ESTABLECIMIENTO.PrecedenceConstraints[Restricción 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{FE80E29B-C821-4659-98DD-3BF10BF3448E}"
+          DTS:From="Package\DIM_ESTABLECIMIENTO\CARGA DIM_ESTABLECIMIENTO"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción 1"
+          DTS:To="Package\DIM_ESTABLECIMIENTO\ACTUALIZA DIM_ESTABLECIMIENTO" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+</DTS:Executable>

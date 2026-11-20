@@ -1,0 +1,911 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="11/16/2026 11:48:12 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="EDUARDOBIT"
+  DTS:CreatorName="EDUARDOBIT\Eduardo"
+  DTS:DTSID="{E9E47AB4-E0AB-4A6A-AFE5-6A79DF006C4C}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="3082"
+  DTS:ObjectName="FACT_ATENCION_NUTRICIONAL"
+  DTS:PackageType="5"
+  DTS:VersionBuild="1"
+  DTS:VersionGUID="{8DB6B64A-EAF2-4288-9406-2093921E5542}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{8EB34B10-4A65-4A9D-B119-24EA4AD0E636}"
+      DTS:ObjectName="OLEDB_DWH_UNICEF">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DWH_UNICEF;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\FACT_ATENCION_NUTRICIONAL"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Contenedor de secuencias"
+      DTS:DTSID="{7006C327-B051-451F-BAED-ACFE2D50C649}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="FACT_ATENCION_NUTRICIONAL">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\FACT_ATENCION_NUTRICIONAL\LIMPIA FACT_ATENCIONNUTRICIONAL"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Tarea Ejecutar SQL"
+          DTS:DTSID="{26D428A3-225A-461E-AAD2-02421D1DD98F}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="LIMPIA FACT_ATENCIONNUTRICIONAL"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{8EB34B10-4A65-4A9D-B119-24EA4AD0E636}"
+              SQLTask:TimeOut="0"
+              SQLTask:SqlStatementSource="TRUNCATE TABLE Fact_AtencionNutricional;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Tarea Flujo de datos"
+          DTS:DTSID="{592AB515-EAC0-48C1-B184-27417B9076AD}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="CARGA FACT_ATENCION_NUTRICIONAL"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="Origen de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;7"
+                  description="Origen de OLE DB"
+                  name="ORIGEN SA_PERU"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset"></property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT  TA.IdTiempo           AS IdTiempoAtencion
+      , TH.IdTiempo           AS IdTiempoHemoglobina
+      , E.IdEstablecimiento
+      , GE.IdGeografia        AS IdGeografiaEESS
+      , GR.IdGeografia        AS IdGeografiaResidencia
+      , P.IdPaciente
+      , DX.IdDiagnostico
+      , EN.IdEstadoNutricional
+      , PS.IdProgramaSocial
+      , X.IdRegistroOrigen
+      , X.PesoKg
+      , X.TallaCm
+      , X.HemoglobinaObservada
+      , X.HemoglobinaCorregida
+      , X.IndAnemia
+      , X.IndCRED
+      , X.IndSuplementacion
+      , X.IndConsejeria
+      , X.IndSesionDemostrativa
+      , X.IndTamizajeOportuno
+      , X.IndDxInconsistente
+FROM
+    (
+        SELECT  CAST(CONVERT(CHAR(8), FA.F, 112) AS INT)                                                    AS FechaAtencion
+              , CAST(CASE WHEN FH.F BETWEEN '2017-01-01' AND '2050-12-31'
+                          THEN CONVERT(CHAR(8), FH.F, 112) ELSE '19000101' END AS INT)                      AS FechaHemoglobina
+              , CAST(RIGHT('00000000' + CAST(CAST(N.Renipress AS INT) AS VARCHAR(8)), 8) AS VARCHAR(8))     AS CodRenipress
+              , CAST(CASE WHEN N.UbiREN &gt; 0 THEN RIGHT('000000' + CAST(CAST(N.UbiREN AS INT) AS VARCHAR(6)), 6)
+                          ELSE '000000' END AS VARCHAR(6))                                                   AS UbigeoEESS
+              , CAST(CASE WHEN N.UbiPN &gt; 0 THEN RIGHT('000000' + CAST(CAST(N.UbiPN AS INT) AS VARCHAR(6)), 6)
+                          ELSE '000000' END AS VARCHAR(6))                                                   AS UbigeoResidencia
+              , CAST(CASE WHEN N.Edad BETWEEN 6 AND 59 AND UPPER(TRIM(T1.SEXO_SA)) IN ('M', 'F')
+                          THEN UPPER(TRIM(T1.SEXO_SA)) ELSE 'X' END AS VARCHAR(1))                           AS Sexo
+              , CAST(CASE WHEN N.Edad BETWEEN 6 AND 59 AND UPPER(TRIM(T1.SEXO_SA)) IN ('M', 'F')
+                          THEN N.Edad ELSE 0 END AS INT)                                                     AS EdadMeses
+              , CAST(D.Dx AS VARCHAR(30))                                                                    AS Diagnostico
+              , CAST(CASE WHEN N.Talla BETWEEN 45 AND 130 THEN 'CON MEDICION' ELSE 'SIN DATO' END AS VARCHAR(30)) AS Categoria
+              , CAST(CASE CAST(dbo.fn_Num(T1.SIS_SA) AS INT)       WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS SIS
+              , CAST(CASE CAST(dbo.fn_Num(T1.JUNTOS_SA) AS INT)    WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS Juntos
+              , CAST(CASE CAST(dbo.fn_Num(T1.QALIWARMA_SA) AS INT) WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS QaliWarma
+              , CAST(CASE CAST(dbo.fn_Num(T1.PIN_SA) AS INT)       WHEN 1 THEN '1' WHEN 0 THEN '0' ELSE '9' END AS VARCHAR(1)) AS Pin
+              , CAST(CONVERT(VARCHAR(64), HASHBYTES('SHA2_256', CONCAT_WS('|', T1.DIRESA_SA, T1.RENIPRESS_SA, T1.FECHAATENCION_SA
+                     , T1.SEXO_SA, T1.EDADMESES_SA, T1.UBIGEOPN_SA, T1.PESO_SA, T1.TALLA_SA, T1.HEMOGLOBINA_SA
+                     , T1.FECHAHEMOGLOBINA_SA, T1.HBC_SA, T1.DX_ANEMIA_SA)), 2) AS CHAR(64))                 AS IdRegistroOrigen
+              , CAST(CASE WHEN N.Peso BETWEEN 2 AND 30 THEN N.Peso END AS DECIMAL(5,2))                      AS PesoKg
+              , CAST(CASE WHEN N.Talla BETWEEN 45 AND 130 THEN N.Talla END AS DECIMAL(5,1))                  AS TallaCm
+              , CAST(CASE WHEN N.Hb BETWEEN 4 AND 20 THEN N.Hb END AS DECIMAL(4,1))                          AS HemoglobinaObservada
+              , CAST(N.Hbc AS DECIMAL(5,2))                                                                  AS HemoglobinaCorregida
+              , CAST(CASE WHEN D.Dx IN ('ANEMIA LEVE', 'ANEMIA MODERADA', 'ANEMIA SEVERA') THEN 1 ELSE 0 END AS TINYINT) AS IndAnemia
+              , CAST(CASE WHEN CAST(dbo.fn_Num(T1.CRED_SA) AS INT) = 1 THEN 1 ELSE 0 END AS TINYINT)           AS IndCRED
+              , CAST(CASE WHEN CAST(dbo.fn_Num(T1.SUPLEMENTACION_SA) AS INT) = 1 THEN 1 ELSE 0 END AS TINYINT) AS IndSuplementacion
+              , CAST(CASE WHEN CAST(dbo.fn_Num(T1.CONSEJERIA_SA) AS INT) = 1 THEN 1 ELSE 0 END AS TINYINT)     AS IndConsejeria
+              , CAST(CASE WHEN CAST(dbo.fn_Num(T1.SESION_SA) AS INT) = 1 THEN 1 ELSE 0 END AS TINYINT)         AS IndSesionDemostrativa
+              , CAST(CASE WHEN FH.F = FA.F THEN 1 ELSE 0 END AS TINYINT)                                       AS IndTamizajeOportuno
+              , CAST(CASE WHEN N.Hbc IS NULL OR D.Dx = 'SIN DATO' THEN 0
+                          WHEN D.Dx &lt;&gt; CASE WHEN N.Hbc &lt; 7  THEN 'ANEMIA SEVERA'
+                                            WHEN N.Hbc &lt; 10 THEN 'ANEMIA MODERADA'
+                                            WHEN N.Hbc &lt; 11 THEN 'ANEMIA LEVE'
+                                            ELSE 'NORMAL' END THEN 1 ELSE 0 END AS TINYINT)                  AS IndDxInconsistente
+        FROM SA_PERU T1
+        CROSS APPLY (SELECT dbo.fn_FechaES(T1.FECHAATENCION_SA)    AS F) FA
+        CROSS APPLY (SELECT dbo.fn_FechaES(T1.FECHAHEMOGLOBINA_SA) AS F) FH
+        CROSS APPLY (SELECT dbo.fn_Num(T1.RENIPRESS_SA)            AS Renipress
+                          , dbo.fn_Num(T1.UBIGE0REN_SA)            AS UbiREN
+                          , dbo.fn_Num(T1.UBIGEOPN_SA)             AS UbiPN
+                          , CAST(dbo.fn_Num(T1.EDADMESES_SA) AS INT) AS Edad
+                          , dbo.fn_Num(T1.PESO_SA)                 AS Peso
+                          , dbo.fn_Num(T1.TALLA_SA)                AS Talla
+                          , dbo.fn_Num(T1.HEMOGLOBINA_SA)          AS Hb
+                          , dbo.fn_Num(T1.HBC_SA)                  AS Hbc) N
+        CROSS APPLY (SELECT ISNULL(NULLIF(UPPER(TRIM(T1.DX_ANEMIA_SA)), ''), 'SIN DATO') AS Dx) D
+    ) X
+LEFT JOIN Dim_Tiempo            TA ON TA.Fecha        = X.FechaAtencion
+LEFT JOIN Dim_Tiempo            TH ON TH.Fecha        = X.FechaHemoglobina
+LEFT JOIN Dim_Establecimiento   E  ON E.CodRenipress  = X.CodRenipress
+LEFT JOIN Dim_Geografia         GE ON GE.Ubigeo       = X.UbigeoEESS
+LEFT JOIN Dim_Geografia         GR ON GR.Ubigeo       = X.UbigeoResidencia
+LEFT JOIN Dim_Paciente          P  ON P.Sexo          = X.Sexo AND P.EdadMeses = X.EdadMeses
+LEFT JOIN Dim_DiagnosticoAnemia DX ON DX.Diagnostico  = X.Diagnostico
+LEFT JOIN Dim_EstadoNutricional EN ON EN.Categoria    = X.Categoria
+LEFT JOIN Dim_ProgramaSocial    PS ON PS.SIS = X.SIS AND PS.Juntos = X.Juntos AND PS.QaliWarma = X.QaliWarma AND PS.Pin = X.Pin</property>
+                    <property dataType="System.String" description="Variable que contiene el comando SQL para ejecutar." name="SqlCommandVariable"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">2</property>
+                    <property dataType="System.String" description="Las asignaciones entre los parámetros del comando SQL y las variables." name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]"
+                      name="Salida de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdTiempoAtencion]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdTiempoAtencion]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdTiempoAtencion]"
+                          name="IdTiempoAtencion"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdTiempoHemoglobina]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdTiempoHemoglobina]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdTiempoHemoglobina]"
+                          name="IdTiempoHemoglobina"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdEstablecimiento]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdEstablecimiento]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdEstablecimiento]"
+                          name="IdEstablecimiento"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdGeografiaEESS]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdGeografiaEESS]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdGeografiaEESS]"
+                          name="IdGeografiaEESS"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdGeografiaResidencia]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdGeografiaResidencia]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdGeografiaResidencia]"
+                          name="IdGeografiaResidencia"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdPaciente]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdPaciente]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdPaciente]"
+                          name="IdPaciente"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdDiagnostico]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdDiagnostico]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdDiagnostico]"
+                          name="IdDiagnostico"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdEstadoNutricional]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdEstadoNutricional]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdEstadoNutricional]"
+                          name="IdEstadoNutricional"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdProgramaSocial]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdProgramaSocial]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdProgramaSocial]"
+                          name="IdProgramaSocial"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdRegistroOrigen]"
+                          codePage="1252" dataType="str" length="64"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdRegistroOrigen]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdRegistroOrigen]"
+                          name="IdRegistroOrigen"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PesoKg]"
+                          dataType="numeric" precision="5" scale="2"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[PesoKg]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PesoKg]"
+                          name="PesoKg"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[TallaCm]"
+                          dataType="numeric" precision="5" scale="1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[TallaCm]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[TallaCm]"
+                          name="TallaCm"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[HemoglobinaObservada]"
+                          dataType="numeric" precision="4" scale="1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[HemoglobinaObservada]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[HemoglobinaObservada]"
+                          name="HemoglobinaObservada"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[HemoglobinaCorregida]"
+                          dataType="numeric" precision="5" scale="2"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[HemoglobinaCorregida]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[HemoglobinaCorregida]"
+                          name="HemoglobinaCorregida"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndAnemia]"
+                          dataType="ui1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndAnemia]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndAnemia]"
+                          name="IndAnemia"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndCRED]"
+                          dataType="ui1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndCRED]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndCRED]"
+                          name="IndCRED"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndSuplementacion]"
+                          dataType="ui1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndSuplementacion]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndSuplementacion]"
+                          name="IndSuplementacion"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndConsejeria]"
+                          dataType="ui1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndConsejeria]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndConsejeria]"
+                          name="IndConsejeria"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndSesionDemostrativa]"
+                          dataType="ui1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndSesionDemostrativa]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndSesionDemostrativa]"
+                          name="IndSesionDemostrativa"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndTamizajeOportuno]"
+                          dataType="ui1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndTamizajeOportuno]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndTamizajeOportuno]"
+                          name="IndTamizajeOportuno"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndDxInconsistente]"
+                          dataType="ui1"
+                          errorOrTruncationOperation="Conversión"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndDxInconsistente]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndDxInconsistente]"
+                          name="IndDxInconsistente"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdTiempoAtencion]"
+                          dataType="i4"
+                          name="IdTiempoAtencion" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdTiempoHemoglobina]"
+                          dataType="i4"
+                          name="IdTiempoHemoglobina" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdEstablecimiento]"
+                          dataType="i4"
+                          name="IdEstablecimiento" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdGeografiaEESS]"
+                          dataType="i4"
+                          name="IdGeografiaEESS" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdGeografiaResidencia]"
+                          dataType="i4"
+                          name="IdGeografiaResidencia" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdPaciente]"
+                          dataType="i4"
+                          name="IdPaciente" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdDiagnostico]"
+                          dataType="i4"
+                          name="IdDiagnostico" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdEstadoNutricional]"
+                          dataType="i4"
+                          name="IdEstadoNutricional" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdProgramaSocial]"
+                          dataType="i4"
+                          name="IdProgramaSocial" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IdRegistroOrigen]"
+                          codePage="1252" dataType="str" length="64"
+                          name="IdRegistroOrigen" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[PesoKg]"
+                          dataType="numeric" precision="5" scale="2"
+                          name="PesoKg" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[TallaCm]"
+                          dataType="numeric" precision="5" scale="1"
+                          name="TallaCm" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[HemoglobinaObservada]"
+                          dataType="numeric" precision="4" scale="1"
+                          name="HemoglobinaObservada" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[HemoglobinaCorregida]"
+                          dataType="numeric" precision="5" scale="2"
+                          name="HemoglobinaCorregida" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndAnemia]"
+                          dataType="ui1"
+                          name="IndAnemia" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndCRED]"
+                          dataType="ui1"
+                          name="IndCRED" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndSuplementacion]"
+                          dataType="ui1"
+                          name="IndSuplementacion" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndConsejeria]"
+                          dataType="ui1"
+                          name="IndConsejeria" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndSesionDemostrativa]"
+                          dataType="ui1"
+                          name="IndSesionDemostrativa" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndTamizajeOportuno]"
+                          dataType="ui1"
+                          name="IndTamizajeOportuno" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].ExternalColumns[IndDxInconsistente]"
+                          dataType="ui1"
+                          name="IndDxInconsistente" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB]"
+                      isErrorOut="true"
+                      name="Salida de error de origen de OLE DB">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdTiempoAtencion]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdTiempoAtencion]"
+                          name="IdTiempoAtencion" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdTiempoHemoglobina]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdTiempoHemoglobina]"
+                          name="IdTiempoHemoglobina" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdEstablecimiento]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdEstablecimiento]"
+                          name="IdEstablecimiento" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdGeografiaEESS]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdGeografiaEESS]"
+                          name="IdGeografiaEESS" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdGeografiaResidencia]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdGeografiaResidencia]"
+                          name="IdGeografiaResidencia" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdPaciente]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdPaciente]"
+                          name="IdPaciente" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdDiagnostico]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdDiagnostico]"
+                          name="IdDiagnostico" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdEstadoNutricional]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdEstadoNutricional]"
+                          name="IdEstadoNutricional" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdProgramaSocial]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdProgramaSocial]"
+                          name="IdProgramaSocial" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdRegistroOrigen]"
+                          codePage="1252" dataType="str" length="64"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IdRegistroOrigen]"
+                          name="IdRegistroOrigen" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[PesoKg]"
+                          dataType="numeric" precision="5" scale="2"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[PesoKg]"
+                          name="PesoKg" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[TallaCm]"
+                          dataType="numeric" precision="5" scale="1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[TallaCm]"
+                          name="TallaCm" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[HemoglobinaObservada]"
+                          dataType="numeric" precision="4" scale="1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[HemoglobinaObservada]"
+                          name="HemoglobinaObservada" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[HemoglobinaCorregida]"
+                          dataType="numeric" precision="5" scale="2"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[HemoglobinaCorregida]"
+                          name="HemoglobinaCorregida" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndAnemia]"
+                          dataType="ui1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndAnemia]"
+                          name="IndAnemia" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndCRED]"
+                          dataType="ui1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndCRED]"
+                          name="IndCRED" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndSuplementacion]"
+                          dataType="ui1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndSuplementacion]"
+                          name="IndSuplementacion" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndConsejeria]"
+                          dataType="ui1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndConsejeria]"
+                          name="IndConsejeria" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndSesionDemostrativa]"
+                          dataType="ui1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndSesionDemostrativa]"
+                          name="IndSesionDemostrativa" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndTamizajeOportuno]"
+                          dataType="ui1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndTamizajeOportuno]"
+                          name="IndTamizajeOportuno" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndDxInconsistente]"
+                          dataType="ui1"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[IndDxInconsistente]"
+                          name="IndDxInconsistente" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de error de origen de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="Destino de OLE DB;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; Todos los derechos reservados; http://www.microsoft.com/sql/support;4"
+                  description="Destino de OLE DB"
+                  name="INSERTA FACT_ATENCIONNUTRICIONAL"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property dataType="System.Int32" description="Número de segundos antes de que se agote el tiempo de espera de un comando. Un valor de 0 indica un tiempo de espera infinito." name="CommandTimeout">0</property>
+                    <property dataType="System.String" description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowset">[dbo].[Fact_AtencionNutricional]</property>
+                    <property dataType="System.String" description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas." name="OpenRowsetVariable"></property>
+                    <property dataType="System.String" description="Comando SQL para ejecutar." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property dataType="System.Int32" description="Especifica la página de códigos de columna para utilizar cuando la información de página de códigos no está disponible en el origen de datos." name="DefaultCodePage">1252</property>
+                    <property dataType="System.Boolean" description="Fuerza el uso del valor de la propiedad DefaultCodePage al describir datos de caracteres." name="AlwaysUseDefaultCodePage">false</property>
+                    <property dataType="System.Int32" description="Especifica el modo utilizado para obtener acceso a la base de datos." name="AccessMode" typeConverter="AccessMode">3</property>
+                    <property dataType="System.Boolean" description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino." name="FastLoadKeepIdentity">false</property>
+                    <property dataType="System.Boolean" description="Indica si las columnas que contienen NULL tendrán NULL insertado en el destino." name="FastLoadKeepNulls">false</property>
+                    <property dataType="System.String" description="Especifica opciones para usar con la carga rápida." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property dataType="System.Int32" description="Especifica cuándo se emiten confirmaciones durante la inserción de datos." name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_DWH_UNICEF]"
+                      description="La conexión de tiempo de ejecución OLE DB usada para obtener acceso a la base de datos."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB]"
+                      errorOrTruncationOperation="Insertar"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="Entrada de destino de OLE DB">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdTiempoAtencion]"
+                          cachedDataType="i4"
+                          cachedName="IdTiempoAtencion"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdTiempoAtencion]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdTiempoAtencion]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdTiempoHemoglobina]"
+                          cachedDataType="i4"
+                          cachedName="IdTiempoHemoglobina"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdTiempoHemoglobina]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdTiempoHemoglobina]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdEstablecimiento]"
+                          cachedDataType="i4"
+                          cachedName="IdEstablecimiento"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstablecimiento]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdEstablecimiento]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdGeografiaEESS]"
+                          cachedDataType="i4"
+                          cachedName="IdGeografiaEESS"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdGeografiaEESS]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdGeografiaEESS]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdGeografiaResidencia]"
+                          cachedDataType="i4"
+                          cachedName="IdGeografiaResidencia"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdGeografiaResidencia]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdGeografiaResidencia]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdPaciente]"
+                          cachedDataType="i4"
+                          cachedName="IdPaciente"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdPaciente]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdPaciente]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdDiagnostico]"
+                          cachedDataType="i4"
+                          cachedName="IdDiagnostico"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdDiagnostico]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdDiagnostico]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdEstadoNutricional]"
+                          cachedDataType="i4"
+                          cachedName="IdEstadoNutricional"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstadoNutricional]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdEstadoNutricional]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdProgramaSocial]"
+                          cachedDataType="i4"
+                          cachedName="IdProgramaSocial"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdProgramaSocial]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdProgramaSocial]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IdRegistroOrigen]"
+                          cachedCodepage="1252" cachedDataType="str" cachedLength="64"
+                          cachedName="IdRegistroOrigen"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdRegistroOrigen]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IdRegistroOrigen]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[PesoKg]"
+                          cachedDataType="numeric" cachedPrecision="5" cachedScale="2"
+                          cachedName="PesoKg"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[PesoKg]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[PesoKg]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[TallaCm]"
+                          cachedDataType="numeric" cachedPrecision="5" cachedScale="1"
+                          cachedName="TallaCm"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[TallaCm]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[TallaCm]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[HemoglobinaObservada]"
+                          cachedDataType="numeric" cachedPrecision="4" cachedScale="1"
+                          cachedName="HemoglobinaObservada"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[HemoglobinaObservada]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[HemoglobinaObservada]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[HemoglobinaCorregida]"
+                          cachedDataType="numeric" cachedPrecision="5" cachedScale="2"
+                          cachedName="HemoglobinaCorregida"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[HemoglobinaCorregida]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[HemoglobinaCorregida]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IndAnemia]"
+                          cachedDataType="ui1"
+                          cachedName="IndAnemia"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndAnemia]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndAnemia]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IndCRED]"
+                          cachedDataType="ui1"
+                          cachedName="IndCRED"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndCRED]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndCRED]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IndSuplementacion]"
+                          cachedDataType="ui1"
+                          cachedName="IndSuplementacion"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndSuplementacion]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndSuplementacion]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IndConsejeria]"
+                          cachedDataType="ui1"
+                          cachedName="IndConsejeria"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndConsejeria]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndConsejeria]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IndSesionDemostrativa]"
+                          cachedDataType="ui1"
+                          cachedName="IndSesionDemostrativa"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndSesionDemostrativa]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndSesionDemostrativa]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IndTamizajeOportuno]"
+                          cachedDataType="ui1"
+                          cachedName="IndTamizajeOportuno"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndTamizajeOportuno]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndTamizajeOportuno]" />
+                        <inputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].Columns[IndDxInconsistente]"
+                          cachedDataType="ui1"
+                          cachedName="IndDxInconsistente"
+                          externalMetadataColumnId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndDxInconsistente]"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB].Columns[IndDxInconsistente]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdAtencion]"
+                          dataType="i8"
+                          name="IdAtencion" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdTiempoAtencion]"
+                          dataType="i4"
+                          name="IdTiempoAtencion" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdTiempoHemoglobina]"
+                          dataType="i4"
+                          name="IdTiempoHemoglobina" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstablecimiento]"
+                          dataType="i4"
+                          name="IdEstablecimiento" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdGeografiaEESS]"
+                          dataType="i4"
+                          name="IdGeografiaEESS" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdGeografiaResidencia]"
+                          dataType="i4"
+                          name="IdGeografiaResidencia" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdPaciente]"
+                          dataType="i4"
+                          name="IdPaciente" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdDiagnostico]"
+                          dataType="i4"
+                          name="IdDiagnostico" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdEstadoNutricional]"
+                          dataType="i4"
+                          name="IdEstadoNutricional" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdProgramaSocial]"
+                          dataType="i4"
+                          name="IdProgramaSocial" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IdRegistroOrigen]"
+                          codePage="1252" dataType="str" length="64"
+                          name="IdRegistroOrigen" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[PesoKg]"
+                          dataType="numeric" precision="5" scale="2"
+                          name="PesoKg" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[TallaCm]"
+                          dataType="numeric" precision="5" scale="1"
+                          name="TallaCm" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[HemoglobinaObservada]"
+                          dataType="numeric" precision="4" scale="1"
+                          name="HemoglobinaObservada" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[HemoglobinaCorregida]"
+                          dataType="numeric" precision="5" scale="2"
+                          name="HemoglobinaCorregida" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndAnemia]"
+                          dataType="ui1"
+                          name="IndAnemia" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndCRED]"
+                          dataType="ui1"
+                          name="IndCRED" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndSuplementacion]"
+                          dataType="ui1"
+                          name="IndSuplementacion" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndConsejeria]"
+                          dataType="ui1"
+                          name="IndConsejeria" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndSesionDemostrativa]"
+                          dataType="ui1"
+                          name="IndSesionDemostrativa" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndTamizajeOportuno]"
+                          dataType="ui1"
+                          name="IndTamizajeOportuno" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[IndDxInconsistente]"
+                          dataType="ui1"
+                          name="IndDxInconsistente" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[CantidadAtenciones]"
+                          dataType="i4"
+                          name="CantidadAtenciones" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaCarga]"
+                          dataType="dbTimeStamp"
+                          name="FechaCarga" />
+                        <externalMetadataColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaActualizacion]"
+                          dataType="dbTimeStamp"
+                          name="FechaActualizacion" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Outputs[Salida de error de destino de OLE DB]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Salida de error de destino de OLE DB"
+                      synchronousInputId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Outputs[Salida de error de destino de OLE DB].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL.Paths[Salida de origen de OLE DB]"
+                  endId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\INSERTA FACT_ATENCIONNUTRICIONAL.Inputs[Entrada de destino de OLE DB]"
+                  name="Salida de origen de OLE DB"
+                  startId="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL\ORIGEN SA_PERU.Outputs[Salida de origen de OLE DB]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\FACT_ATENCION_NUTRICIONAL.PrecedenceConstraints[Restricción]"
+          DTS:CreationName=""
+          DTS:DTSID="{A6C93B02-02A8-4B62-9FD1-E4E3DF6B04B5}"
+          DTS:From="Package\FACT_ATENCION_NUTRICIONAL\LIMPIA FACT_ATENCIONNUTRICIONAL"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Restricción"
+          DTS:To="Package\FACT_ATENCION_NUTRICIONAL\CARGA FACT_ATENCION_NUTRICIONAL" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+</DTS:Executable>
